@@ -12,7 +12,7 @@ type RootLayoutProps = {
 
 export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
   return (
-    <html lang='pt-BR' className={`antialiased`}>
+    <html lang='pt-BR' className='antialiased'>
       <body>{children}</body>
     </html>
   );
