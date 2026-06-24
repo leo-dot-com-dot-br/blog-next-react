@@ -2,9 +2,13 @@ import { findAllPostAdmin } from '@/lib/post/queries/admin';
 import clsx from 'clsx';
 import Link from 'next/link';
 import { DeletePostButton } from '../admin/DeletePostButton';
+import ErrorMessage from '../ErrorMessage';
 
 export default async function PostsListAdmin() {
   const posts = await findAllPostAdmin();
+
+  if (posts.length <= 0)
+    return <ErrorMessage contentTitle='Ei...!' content='Bora criar um post!' />;
 
   return (
     <div className='mb-16'>
@@ -30,50 +34,6 @@ export default async function PostsListAdmin() {
           </div>
         );
       })}
-
-      <div
-        className={clsx(
-          'fixed z-50 inset-0 bg-black/50 backdrop-blur-xs',
-          'flex items-center justify-center',
-        )}
-      >
-        <div
-          className={clsx(
-            'bg-slate-100 p-6 rounded-lg max-w-2xl mx-6',
-            'flex flex-col gap-6',
-            'shadow-lg shadow-black/30 text-center',
-          )}
-        >
-          <h3 className='text-xl font-extrabold'>Título do diálogo</h3>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Perspiciatis dolorem laboriosam nulla veritatis, non nostrum
-            asperiores dolor mollitia consectetur vel doloribus nihil labore.
-            Aspernatur, reiciendis molestias nam dicta mollitia cumque!
-          </p>
-          <div className='flex items-center justify-around'>
-            <button
-              className={clsx(
-                'bg-slate-300 hover:bg-slate-400 transition text-slate-950',
-                'flex items-center justify-center',
-                'py-2 px-4 rounded-lg cursor-pointer',
-              )}
-            >
-              OK
-            </button>
-            <button
-              className={clsx(
-                'bg-blue-500 hover:bg-blue-600 transition text-blue-100',
-                'flex items-center justify-center',
-                'py-2 px-4 rounded-lg cursor-pointer',
-              )}
-              autoFocus
-            >
-              Cancelar
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
