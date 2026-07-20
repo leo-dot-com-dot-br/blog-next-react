@@ -4,12 +4,13 @@ import { uploadImageAction } from '@/actions/upload/upload-image-action';
 import { Button } from '@/components/Button';
 import { IMAGE_UPLOAD_MAX_SIZE } from '@/lib/constants';
 import { ImageUpIcon } from 'lucide-react';
-import { useRef, useTransition } from 'react';
+import { useRef, useState, useTransition } from 'react';
 import { toast } from 'react-toastify';
 
 export function ImageUploader() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, startTransition] = useTransition();
+  const [imgUrl, setImgUrl] = useState('');
 
   function handleChooseFile() {
     if (!fileInputRef.current) return;
@@ -20,12 +21,18 @@ export function ImageUploader() {
   function handleChange() {
     toast.dismiss();
 
-    if (!fileInputRef.current) return;
+    if (!fileInputRef.current) {
+      setImgUrl('');
+      return;
+    }
 
     const fileInput = fileInputRef.current;
     const file = fileInput?.files?.[0];
 
-    if (!file) return;
+    if (!file) {
+      setImgUrl('');
+      return;
+    }
 
     if (file.size > IMAGE_UPLOAD_MAX_SIZE) {
       const readableMaxSize = IMAGE_UPLOAD_MAX_SIZE / 1024;
@@ -34,6 +41,7 @@ export function ImageUploader() {
       );
 
       fileInput.value = '';
+      setImgUrl('');
       return;
     }
 
@@ -46,21 +54,41 @@ export function ImageUploader() {
       if (result.error) {
         toast.error(result.error);
         fileInput.value = '';
+        setImgUrl('');
         return;
       }
 
-      toast.success(result.url);
+      setImgUrl(result.url);
+
+      toast.success('Imagem enviada');
     });
 
     fileInput.value = '';
   }
 
   return (
-    <div className='flex flex-col gap-2 py-4'>
-      <Button onClick={handleChooseFile} type='button' className='self-start'>
+    <div className='flex flex-col gap-4 py-4'>
+      <Button
+        onClick={handleChooseFile}
+        type='button'
+        className='self-start'
+        disabled={isUploading}
+      >
         <ImageUpIcon />
         Enviar imagem
       </Button>
+
+      {!!imgUrl && (
+        <div className='flex flex-col gap-4'>
+          <p>
+            <b>URL:</b>
+            {imgUrl}
+          </p>
+
+          {/* eslint-disable-next-line */}
+          <img className='rounded-lg' src={imgUrl} />
+        </div>
+      )}
 
       <input
         ref={fileInputRef}
@@ -69,6 +97,7 @@ export function ImageUploader() {
         type='file'
         accept='image/*'
         onChange={handleChange}
+        disabled={isUploading}
       />
     </div>
   );
